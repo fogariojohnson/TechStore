@@ -62,6 +62,31 @@ class Product:
         return total_price
 
 
+class NonStockedProduct(Product):
+    def __init__(self, name, price):
+        super().__init__(name, price, quantity=0)
+
+    def show(self):
+        if self.quantity == 0:
+            return f'{self.name}, Price: {self.price}, Quantity: Unlimited '
+        else:
+            return super().show()
+
+
+class LimitedProduct(Product):
+    def __init__(self, name, price, quantity, maximum):
+        super().__init__(name, price, quantity)
+        self.maximum = maximum
+
+    def show(self):
+        return f'{self.name}, Price: {self.price}, Limited to {self.maximum} per order'
+
+    def buy(self, quantity):
+        if quantity > self.maximum:
+            raise ValueError("Quantity exceeds the maximum limit for this product.")
+        return super().buy(quantity)
+
+
 if __name__ == "__main__":
     bose = Product("Bose QuietComfort Earbuds", price=250, quantity=500)
     mac = Product("MacBook Air M2", price=1450, quantity=100)

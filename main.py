@@ -17,7 +17,9 @@ class TechStore:
         self.product_list = [
             products.Product("MacBook Air M2", price=1450, quantity=100),
             products.Product("Bose QuietComfort Earbuds", price=250, quantity=500),
-            products.Product("Google Pixel 7", price=500, quantity=250)
+            products.Product("Google Pixel 7", price=500, quantity=250),
+            products.NonStockedProduct("Windows License", price=125),
+            products.LimitedProduct("Shipping", price=10, quantity=250, maximum=1)
         ]
         self.best_buy = store.Store(self.product_list)
 
@@ -71,7 +73,7 @@ class TechStore:
             print("Product added to list!")
 
         try:
-            total_price = self.best_buy.order(order_list)
+            total_price = sum(product.buy(quantity) for product, quantity in order_list)
             formatted_price = f"{total_price:.2f}"
             print(f"Order made! Total payment: ${formatted_price}")
         except ValueError as error:
