@@ -19,6 +19,15 @@ class Product:
         self.price = price
         self.quantity = quantity
         self.active = True
+        self.promotion = None
+
+    def get_promotion(self):
+        """Getter function for promotion and returns the promotion variable."""
+        return self.promotion
+
+    def set_promotion(self, promotion):
+        """Setter function for promotion."""
+        self.promotion = promotion
 
     def get_quantity(self):
         """Getter function for quantity and returns the quantity variable in float"""
@@ -44,7 +53,8 @@ class Product:
 
     def show(self):
         """Returns a string that represents the product."""
-        return f'{self.name}, Price: {self.price}, Quantity: {self.quantity}'
+        promotion_info = f"Promotion: {self.promotion.name}" if self.promotion else "No promotion"
+        return f'{self.name}, Price: {self.price}, Quantity: {self.quantity}, {promotion_info}'
 
     def buy(self, quantity) -> float:
         """Buys the given quantity of the product."""
@@ -57,23 +67,30 @@ class Product:
         if quantity > self.quantity:
             raise ValueError("Not enough quantity available.")
 
-        self.quantity -= quantity
-        total_price = self.price * quantity
+        if self.promotion:
+            total_price = self.promotion.apply_promotion(self, quantity)
+        else:
+            total_price = self.price * quantity
+
+        self.quantity -= quantity  # Subtract the quantity ordered from the available quantity
+
         return total_price
 
 
 class NonStockedProduct(Product):
+    """Represents the Non-Stocked Product that we don't need to keep track on its quantity."""
     def __init__(self, name, price):
         super().__init__(name, price, quantity=0)
 
     def show(self):
         if self.quantity == 0:
-            return f'{self.name}, Price: {self.price}, Quantity: Unlimited '
+            return f'{self.name}, Price: {self.price}, Quantity: Unlimited'
         else:
             return super().show()
 
 
 class LimitedProduct(Product):
+    """Represents the Limited Products which can only be purchased on the indicated maximum times of order."""
     def __init__(self, name, price, quantity, maximum):
         super().__init__(name, price, quantity)
         self.maximum = maximum
@@ -84,7 +101,13 @@ class LimitedProduct(Product):
     def buy(self, quantity):
         if quantity > self.maximum:
             raise ValueError("Quantity exceeds the maximum limit for this product.")
-        return super().buy(quantity)
+
+        if quantity > self.quantity:
+            raise ValueError("Not enough quantity available.")
+
+        self.quantity -= quantity
+        total_price = self.price * quantity
+        return total_price
 
 
 if __name__ == "__main__":

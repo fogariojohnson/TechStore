@@ -1,6 +1,7 @@
 import sys
 import products
 import store
+import promotions
 
 
 class TechStore:
@@ -21,6 +22,17 @@ class TechStore:
             products.NonStockedProduct("Windows License", price=125),
             products.LimitedProduct("Shipping", price=10, quantity=250, maximum=1)
         ]
+
+        # Create promotion catalog
+        second_half_price = promotions.SecondHalfPrice("Second Half price!")
+        third_one_free = promotions.ThirdOneFree("Third One Free!")
+        thirty_percent = promotions.PercentDiscount("30% off!", percent=30)
+
+        # Add promotions to products
+        self.product_list[0].set_promotion(second_half_price)
+        self.product_list[1].set_promotion(third_one_free)
+        self.product_list[3].set_promotion(thirty_percent)
+
         self.best_buy = store.Store(self.product_list)
 
     def show_list(self):
@@ -45,6 +57,8 @@ class TechStore:
     def make_order(self):
         """Takes orders until the user enters an empty text."""
         order_list = []
+        self.show_list()
+        print("When you want to finish order, enter empty text.")
 
         while True:
             product_num = input("Which product # do you want? ")
@@ -87,21 +101,23 @@ class TechStore:
     def start(self):
         """ Displays a menu and allows the user to choose from a list of options."""
         while True:
-            print("  Store Menu\n  ------- \n1. List all products in store\n"
-                  "2. Show total amount in store\n3. Make an order\n4. Quit")
+            try:
+                print("  Store Menu\n  ------- \n1. List all products in store\n"
+                      "2. Show total amount in store\n3. Make an order\n4. Quit")
 
-            functions = {
-                1: self.show_list,
-                2: self.total_quantity,
-                3: self.make_order,
-                4: self.exit_program,
-            }
+                functions = {
+                    1: self.show_list,
+                    2: self.total_quantity,
+                    3: self.make_order,
+                    4: self.exit_program,
+                }
 
-            user_choice = int(input("Please choose a number: "))
-            if user_choice in functions:
-                functions[user_choice]()
-                self.start()
-            else:
+                user_choice = int(input("Please choose a number: "))
+                if user_choice in functions:
+                    functions[user_choice]()
+                    self.start()
+
+            except ValueError:
                 print("\033[31m" + "Error! Please choose from numbers 1 to 4." + "\033[0m")
                 self.start()
 
