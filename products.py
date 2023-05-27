@@ -84,9 +84,19 @@ class NonStockedProduct(Product):
 
     def show(self):
         if self.quantity == 0:
-            return f'{self.name}, Price: {self.price}, Quantity: Unlimited'
+            promotion_info = f"Promotion: {self.promotion.name}" if self.promotion else "No promotion"
+            return f'{self.name}, Price: {self.price}, Quantity: Unlimited, {promotion_info}'
         else:
             return super().show()
+
+    def buy(self, quantity):
+        if quantity > self.quantity:
+            if self.promotion:
+                total_price = self.promotion.apply_promotion(self, quantity)
+                return total_price
+            else:
+                total_price = self.price * quantity
+                return total_price
 
 
 class LimitedProduct(Product):
